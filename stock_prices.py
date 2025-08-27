@@ -1,4 +1,5 @@
 from datetime import date
+import os
 from pathlib import Path
 import sys
 from typing import List, Tuple
@@ -8,14 +9,24 @@ import pandas as pd
 
 
 def fetch_stocks(symbols: List[str], start_date: date, end_date: date) -> List[pd.DataFrame]:
-    return [
-        yfinance.download(symbol, start=start_date, end=end_date)
-        for symbol in symbols
-    ]
+    dfs = []
+    for symbol in symbols:
+        df = yfinance.download(symbol, start=start_date, end=end_date)
+        if df is None:
+            print(f"{symbol} not found on Yahoo Finance")
+        else:
+            dfs.append(df)
+
+    return dfs
 
 
 def stock_history_path(symbol: str) -> Path:
-    return Path(f"stock_history/{symbol}_history.csv")
+    parent = Path(os.environ.get("STOCKS_PATH", "stock_history"))
+
+    if not parent.is_dir():
+        parent.mkdir(parents=True)
+
+    return parent / f"{symbol}_history.csv"
 
 
 def save_stock(symbol: str, df: pd.DataFrame):

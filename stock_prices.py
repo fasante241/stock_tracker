@@ -6,6 +6,8 @@ from typing import List, Tuple
 
 import yfinance
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 
 def fetch_stocks(symbols: List[str], start_date: date, end_date: date) -> List[pd.DataFrame]:
@@ -55,6 +57,15 @@ def parse_dates(dates_arg: str) -> Tuple[date, date]:
     assert start < end, "start date must precede end date"
     return start, end
 
+def graph(symbol: str):
+    ab = load_stock(symbol)
+    lines_df = ab.set_index("Date")[["Low", "High"]]
+    axes = lines_df.plot(kind = "line")
+    plt.show()
+
+
+
+
 
 if __name__ == "__main__":
     # symbols = ["AAPL", "META", "AMZN", "NFLX", "GOOGL"]
@@ -65,6 +76,6 @@ if __name__ == "__main__":
     symbols = sys.argv[2:]
 
     stocks = fetch_stocks(symbols, start, end)
-    for symbol, stock in zip(symbols, stocks):
-        save_stock(symbol, stock)
-
+    # for symbol, stock in zip(symbols, stocks):
+        # save_stock(symbol, stock)
+    graph("AAPL")
